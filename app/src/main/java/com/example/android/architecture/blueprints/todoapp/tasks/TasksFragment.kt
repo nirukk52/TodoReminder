@@ -19,19 +19,17 @@ package com.example.android.architecture.blueprints.todoapp.tasks
 import android.app.WallpaperManager
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import android.graphics.Color
 import android.os.Bundle
 import android.view.*
 import android.widget.RelativeLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.android.architecture.blueprints.todoapp.EventObserver
-import com.example.android.architecture.blueprints.todoapp.FixedAspectRatioFrameLayout
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.databinding.TasksFragBinding
@@ -43,6 +41,7 @@ import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
+
 
 /**
  * Display a grid of [Task]s. User can choose to view all, active or completed tasks.
@@ -129,37 +128,20 @@ class TasksFragment : Fragment() {
 
     private fun setWallpaper() {
         val job = GlobalScope.launch {
-
-//            val wallpaper = wm.drawable
-
-
             val layoutInflater: LayoutInflater = LayoutInflater.from(context)
-            val view: View = layoutInflater.inflate(R.layout.image_wallpaper, null)
+            val viewWp: View = layoutInflater.inflate(R.layout.image_wallpaper, null)
 
-//            view.layoutParams = ViewGroup.LayoutParams(FixedAspectRatioFrameLayout.getScreenWidth(), FixedAspectRatioFrameLayout.getScreenHeight())
-            val tvTask = view.findViewById<TextView>(R.id.tvTask)
-//              val ivTask = view.findViewById<ImageView>(R.id.ivWallpaper)
+            val wm = WallpaperManager.getInstance(context)
 
-//              ivTask.setImageDrawable(wallpaper)
-
-//                tvTask.text = it.title
-
+            wm.run {
+                clear()
+                setBitmap(setViewToBitmapImage(viewWp))
+            }
         }
 
-        val wm = WallpaperManager.getInstance(context)
-
-        wm.run {
-            //              val ivTask = view.findViewById<ImageView>(R.id.ivWallpaper)
-            //              ivTask.setImageDrawable(wallpaper)
-//                     tvTask.text = it.title
-            clear()
-            viewDataBinding.setWp.post(Runnable { setBitmap(viewDataBinding.setWp.drawToBitmap(Bitmap.Config.ARGB_8888))})
-
-        }
         job.invokeOnCompletion {
             Toast.makeText(context, "Wallpaper Updated!", Toast.LENGTH_SHORT).show()
         }
-
 
     }
 
@@ -168,8 +150,6 @@ class TasksFragment : Fragment() {
                 RelativeLayout.LayoutParams.WRAP_CONTENT)
         v.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
-        val w = FixedAspectRatioFrameLayout.getScreenWidth()
-        val h = FixedAspectRatioFrameLayout.getScreenHeight()
         v.layout(0, 0, v.measuredWidth, v.measuredHeight)
         val bitmap: Bitmap = Bitmap.createBitmap(v.measuredWidth,
                 v.measuredHeight,
@@ -180,6 +160,36 @@ class TasksFragment : Fragment() {
         return bitmap
     }
 
+    private fun setViewToBitmapImage(view: View): Bitmap? {
+        val returnedBitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(returnedBitmap)
+
+        val bgDrawable = view.background
+        if (bgDrawable != null)
+            bgDrawable.draw(canvas) else
+            canvas.drawColor(Color.WHITE)
+
+        view.draw(canvas)
+        return returnedBitmap
+    }
+
+    private fun createBitmapRemote(v: View): Bitmap {
+        if (v.measuredHeight <= 0) {
+            v.measure(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            val b = Bitmap.createBitmap(v.getMeasuredWidth(), v.getMeasuredHeight(), Bitmap.Config.ARGB_8888)
+            val c = Canvas(b)
+            v.layout(0, 0, v.getMeasuredWidth(), v.getMeasuredHeight())
+            v.draw(c)
+            return b
+        }else{
+            val returnedBitmap = Bitmap.createBitmap(view!!.width, view!!.height, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(returnedBitmap)
+            val bgDrawable = view?.background
+            if (bgDrawable != null) bgDrawable.draw(canvas) else canvas.drawColor(Color.WHITE)
+            view?.draw(canvas)
+            return returnedBitmap
+        }
+    }
 
     private fun showFilteringPopUpMenu() {
         val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
