@@ -89,6 +89,13 @@ android {
  */
 dependencies {
 
+    def core_version = "1.2.0"
+
+    // Java language implementation
+    implementation "androidx.core:core:$core_version"
+    // Kotlin
+    implementation "androidx.core:core-ktx:$core_version"
+
     // App dependencies
     implementation "androidx.appcompat:appcompat:$appCompatVersion"
     implementation "androidx.cardview:cardview:$cardVersion"

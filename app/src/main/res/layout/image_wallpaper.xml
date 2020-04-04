@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<com.example.android.architecture.blueprints.todoapp.FixedAspectRatioFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/igWp"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
 
     <ImageView
         android:id="@+id/ivWallpaper"
@@ -29,4 +33,4 @@
         android:text="Set Wallpaper!"
         android:layout_margin="100dp"
         />
-</FrameLayout>
+</com.example.android.architecture.blueprints.todoapp.FixedAspectRatioFrameLayout>

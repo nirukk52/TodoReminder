@@ -30,6 +30,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.android.architecture.blueprints.todoapp.EventObserver
+import com.example.android.architecture.blueprints.todoapp.FixedAspectRatioFrameLayout
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.databinding.AddtaskFragBinding
 import com.example.android.architecture.blueprints.todoapp.tasks.ADD_EDIT_RESULT_OK
@@ -53,8 +54,8 @@ class AddEditTaskFragment : Fragment() {
     private val viewModel by viewModels<AddEditTaskViewModel> { getViewModelFactory() }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         val root = inflater.inflate(R.layout.addtask_frag, container, false)
         viewDataBinding = AddtaskFragBinding.bind(root).apply {
@@ -62,6 +63,10 @@ class AddEditTaskFragment : Fragment() {
         }
         // Set the lifecycle owner to the lifecycle of the view
         viewDataBinding.lifecycleOwner = this.viewLifecycleOwner
+
+        viewDataBinding.flAddEdit.setOnClickListener {
+            setWallpaper()
+        }
         return viewDataBinding.root
     }
 
@@ -80,14 +85,16 @@ class AddEditTaskFragment : Fragment() {
     private fun setupNavigation() {
         viewModel.taskUpdatedEvent.observe(this, EventObserver {
 
+            setWallpaper()
             val action = AddEditTaskFragmentDirections
-                .actionAddEditTaskFragmentToTasksFragment(ADD_EDIT_RESULT_OK)
+                    .actionAddEditTaskFragmentToTasksFragment(ADD_EDIT_RESULT_OK)
             findNavController().navigate(action)
         })
+    }
 
+    private fun setWallpaper() {
+        val job = GlobalScope.launch {
 
-        val job =  GlobalScope.launch {
-            
             val wm = WallpaperManager.getInstance(context)
             val wallpaper = wm.drawable
 
@@ -95,6 +102,7 @@ class AddEditTaskFragment : Fragment() {
             val layoutInflater: LayoutInflater = LayoutInflater.from(context)
             val view: View = layoutInflater.inflate(R.layout.image_wallpaper, null)
 
+//            view.layoutParams = ViewGroup.LayoutParams(FixedAspectRatioFrameLayout.getScreenWidth(), FixedAspectRatioFrameLayout.getScreenHeight())
             val tvTask = view.findViewById<TextView>(R.id.tvTask)
 //              val ivTask = view.findViewById<ImageView>(R.id.ivWallpaper)
 
@@ -113,16 +121,17 @@ class AddEditTaskFragment : Fragment() {
 
 
         job.invokeOnCompletion {
-            Toast.makeText(context,"Wallpaper Updated!",Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Wallpaper Updated!", Toast.LENGTH_SHORT).show()
         }
-
     }
 
-    fun createBitmapFromView(v: View): Bitmap {
+    private fun createBitmapFromView(v: View): Bitmap {
         v.layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
                 RelativeLayout.LayoutParams.WRAP_CONTENT)
         v.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
                 View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+        val w = FixedAspectRatioFrameLayout.getScreenWidth()
+        val h = FixedAspectRatioFrameLayout.getScreenHeight()
         v.layout(0, 0, v.measuredWidth, v.measuredHeight)
         val bitmap: Bitmap = Bitmap.createBitmap(v.measuredWidth,
                 v.measuredHeight,

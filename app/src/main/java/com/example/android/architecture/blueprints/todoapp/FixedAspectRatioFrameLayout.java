@@ -39,8 +39,8 @@ public class FixedAspectRatioFrameLayout extends FrameLayout
 //        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.FixedAspectRatioFrameLayout);
 
         int[] ratio = getDeviceRatio(getScreenWidth(),getScreenHeight());
-        mAspectRatioWidth = ratio[1];
-        mAspectRatioHeight = ratio[0];
+        mAspectRatioWidth = 9;
+        mAspectRatioHeight = 16;
 
 
         Log.d(TAG,getScreenResolution(context));

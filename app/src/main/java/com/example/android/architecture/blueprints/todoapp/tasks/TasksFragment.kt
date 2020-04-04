@@ -16,19 +16,22 @@
 
 package com.example.android.architecture.blueprints.todoapp.tasks
 
+import android.app.WallpaperManager
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.Menu
-import android.view.MenuInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.RelativeLayout
+import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.drawToBitmap
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.android.architecture.blueprints.todoapp.EventObserver
+import com.example.android.architecture.blueprints.todoapp.FixedAspectRatioFrameLayout
 import com.example.android.architecture.blueprints.todoapp.R
 import com.example.android.architecture.blueprints.todoapp.data.Task
 import com.example.android.architecture.blueprints.todoapp.databinding.TasksFragBinding
@@ -37,6 +40,8 @@ import com.example.android.architecture.blueprints.todoapp.util.setupRefreshLayo
 import com.example.android.architecture.blueprints.todoapp.util.setupSnackbar
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
@@ -44,6 +49,7 @@ import timber.log.Timber
  */
 class TasksFragment : Fragment() {
 
+    val TAG  = "TasksFragment"
     private val viewModel by viewModels<TasksViewModel> { getViewModelFactory() }
 
     private val args: TasksFragmentArgs by navArgs()
@@ -63,6 +69,10 @@ class TasksFragment : Fragment() {
         return viewDataBinding.root
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+//        Log.d(TAG, viewDataBinding.)
+        super.onViewCreated(view, savedInstanceState)
+    }
     override fun onOptionsItemSelected(item: MenuItem) =
         when (item.itemId) {
             R.id.menu_clear -> {
@@ -74,6 +84,7 @@ class TasksFragment : Fragment() {
                 true
             }
             R.id.menu_refresh -> {
+                setWallpaper()
                 viewModel.loadTasks(true)
                 true
             }
@@ -115,6 +126,60 @@ class TasksFragment : Fragment() {
             viewModel.showEditResultMessage(args.userMessage)
         }
     }
+
+    private fun setWallpaper() {
+        val job = GlobalScope.launch {
+
+//            val wallpaper = wm.drawable
+
+
+            val layoutInflater: LayoutInflater = LayoutInflater.from(context)
+            val view: View = layoutInflater.inflate(R.layout.image_wallpaper, null)
+
+//            view.layoutParams = ViewGroup.LayoutParams(FixedAspectRatioFrameLayout.getScreenWidth(), FixedAspectRatioFrameLayout.getScreenHeight())
+            val tvTask = view.findViewById<TextView>(R.id.tvTask)
+//              val ivTask = view.findViewById<ImageView>(R.id.ivWallpaper)
+
+//              ivTask.setImageDrawable(wallpaper)
+
+//                tvTask.text = it.title
+
+        }
+
+        val wm = WallpaperManager.getInstance(context)
+
+        wm.run {
+            //              val ivTask = view.findViewById<ImageView>(R.id.ivWallpaper)
+            //              ivTask.setImageDrawable(wallpaper)
+//                     tvTask.text = it.title
+            clear()
+            viewDataBinding.setWp.post(Runnable { setBitmap(viewDataBinding.setWp.drawToBitmap(Bitmap.Config.ARGB_8888))})
+
+        }
+        job.invokeOnCompletion {
+            Toast.makeText(context, "Wallpaper Updated!", Toast.LENGTH_SHORT).show()
+        }
+
+
+    }
+
+    private fun createBitmapFromView(v: View): Bitmap {
+        v.layoutParams = RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
+                RelativeLayout.LayoutParams.WRAP_CONTENT)
+        v.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+        val w = FixedAspectRatioFrameLayout.getScreenWidth()
+        val h = FixedAspectRatioFrameLayout.getScreenHeight()
+        v.layout(0, 0, v.measuredWidth, v.measuredHeight)
+        val bitmap: Bitmap = Bitmap.createBitmap(v.measuredWidth,
+                v.measuredHeight,
+                Bitmap.Config.ARGB_8888)
+        val c = Canvas(bitmap)
+        v.layout(v.left, v.top, v.right, v.bottom)
+        v.draw(c)
+        return bitmap
+    }
+
 
     private fun showFilteringPopUpMenu() {
         val view = activity?.findViewById<View>(R.id.menu_filter) ?: return
