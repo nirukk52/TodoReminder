@@ -22,6 +22,7 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.os.Bundle
 import android.view.*
+import android.view.LayoutInflater
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.appcompat.widget.PopupMenu
@@ -129,13 +130,13 @@ class TasksFragment : Fragment() {
     private fun setWallpaper() {
         val job = GlobalScope.launch {
             val layoutInflater: LayoutInflater = LayoutInflater.from(context)
-            val viewWp: View = layoutInflater.inflate(R.layout.image_wallpaper, null)
+            val viewWp: View = layoutInflater.inflate(R.layout.wallpaper_frag, null)
 
             val wm = WallpaperManager.getInstance(context)
 
             wm.run {
                 clear()
-                setBitmap(setViewToBitmapImage(viewWp))
+                setBitmap(getViewBitmap(viewWp))
             }
         }
 
@@ -143,6 +144,29 @@ class TasksFragment : Fragment() {
             Toast.makeText(context, "Wallpaper Updated!", Toast.LENGTH_SHORT).show()
         }
 
+    }
+
+//    view.layout(0, 0, width, height);
+
+    fun getViewBitmap(view: View): Bitmap {
+        //Get the dimensions of the view so we can re-layout the view at its current size
+        //and create a bitmap of the same size
+        val width = view.width
+        val height = view.height
+        val measuredWidth = View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY)
+        val measuredHeight = View.MeasureSpec.makeMeasureSpec(height, View.MeasureSpec.EXACTLY)
+
+        //Cause the view to re-layout
+        view.measure(measuredWidth, measuredHeight)
+        view.layout(0, 0, view.measuredWidth, view.measuredHeight)
+
+        //Create a bitmap backed Canvas to draw the view into
+        val b = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+        val c = Canvas(b)
+
+        //Now that the view is laid out and we have a canvas, ask the view to draw itself into the canvas
+        view.draw(c)
+        return b
     }
 
     private fun createBitmapFromView(v: View): Bitmap {

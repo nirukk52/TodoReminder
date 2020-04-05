@@ -39,7 +39,7 @@
             android:visibility="gone"
             >
 
-            <include layout="@layout/image_wallpaper"/>
+            <include layout="@layout/wallpaper_frag"/>
 
         </FrameLayout>
 

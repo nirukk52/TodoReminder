@@ -24,7 +24,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -100,10 +99,10 @@ class AddEditTaskFragment : Fragment() {
 
 
             val layoutInflater: LayoutInflater = LayoutInflater.from(context)
-            val view: View = layoutInflater.inflate(R.layout.image_wallpaper, null)
+            val view: View = layoutInflater.inflate(R.layout.wallpaper_frag, null)
 
 //            view.layoutParams = ViewGroup.LayoutParams(FixedAspectRatioFrameLayout.getScreenWidth(), FixedAspectRatioFrameLayout.getScreenHeight())
-            val tvTask = view.findViewById<TextView>(R.id.tvTask)
+//            val tvTask = view.findViewById<TextView>(R.id.tvTask)
 //              val ivTask = view.findViewById<ImageView>(R.id.ivWallpaper)
 
 //              ivTask.setImageDrawable(wallpaper)
@@ -121,7 +120,7 @@ class AddEditTaskFragment : Fragment() {
 
 
         job.invokeOnCompletion {
-            Toast.makeText(context, "Wallpaper Updated!", Toast.LENGTH_SHORT).show()
+//            Toast.makeText(context, "Wallpaper Updated!", Toast.LENGTH_SHORT).show()
         }
     }
 
