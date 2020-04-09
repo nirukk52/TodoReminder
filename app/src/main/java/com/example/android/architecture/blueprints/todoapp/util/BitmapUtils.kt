@@ -33,7 +33,7 @@ object BitmapUtils {
         return bitmap
     }
 
-    fun setViewToBitmapImage(view: View): Bitmap? {
+    fun getBitmapFromView(view: View): Bitmap? {
         val returnedBitmap = Bitmap.createBitmap(view.width, view.height, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(returnedBitmap)
 

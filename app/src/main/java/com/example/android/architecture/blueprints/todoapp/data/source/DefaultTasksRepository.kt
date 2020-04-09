@@ -75,20 +75,20 @@ class DefaultTasksRepository(
 
     private suspend fun fetchTasksFromRemoteOrLocal(forceUpdate: Boolean): Result<List<Task>> {
         // Remote first
-        val remoteTasks = tasksRemoteDataSource.getTasks()
-        when (remoteTasks) {
-            is Error -> Timber.w("Remote data source fetch failed")
-            is Success -> {
-                refreshLocalDataSource(remoteTasks.data)
-                return remoteTasks
-            }
-            else -> throw IllegalStateException()
-        }
-
-        // Don't read from local if it's forced
-        if (forceUpdate) {
-            return Error(Exception("Can't force refresh: remote data source is unavailable"))
-        }
+//        val remoteTasks = tasksRemoteDataSource.getTasks()
+//        when (remoteTasks) {
+//            is Error -> Timber.w("Remote data source fetch failed")
+//            is Success -> {
+//                refreshLocalDataSource(remoteTasks.data)
+//                return remoteTasks
+//            }
+//            else -> throw IllegalStateException()
+//        }
+//
+//        // Don't read from local if it's forced
+//        if (forceUpdate) {
+//            return Error(Exception("Can't force refresh: remote data source is unavailable"))
+//        }
 
         // Local if remote fails
         val localTasks = tasksLocalDataSource.getTasks()

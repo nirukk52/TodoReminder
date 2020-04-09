@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package com.example.android.architecture.blueprints.todoapp.tasks
 
 import android.app.WallpaperManager
@@ -108,7 +107,7 @@ class TasksFragment : Fragment() {
 
         // Always reloading data for simplicity. Real apps should only do this on first load and
         // when navigating back to this destination. TODO: https://issuetracker.google.com/79672220
-        viewModel.loadTasks(true)
+        viewModel.loadTasks(false)
     }
 
     private fun setupNavigation() {

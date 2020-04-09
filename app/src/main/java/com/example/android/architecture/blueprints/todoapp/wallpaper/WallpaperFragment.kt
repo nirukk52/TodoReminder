@@ -3,6 +3,7 @@ package com.example.android.architecture.blueprints.todoapp.wallpaper
 import android.app.WallpaperManager
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -18,14 +19,18 @@ import com.example.android.architecture.blueprints.todoapp.tasks.TasksAdapter
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksFragmentArgs
 import com.example.android.architecture.blueprints.todoapp.tasks.TasksViewModel
 import com.example.android.architecture.blueprints.todoapp.util.BitmapUtils
+import com.example.android.architecture.blueprints.todoapp.util.WallpaperUtils
+import com.example.android.architecture.blueprints.todoapp.util.WallpaperUtils.clearWallpaper
+import com.example.android.architecture.blueprints.todoapp.util.WallpaperUtils.setWallpaper
 import com.example.android.architecture.blueprints.todoapp.util.getViewModelFactory
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 
 class WallpaperFragment : Fragment(), View.OnTouchListener{
 
-    val TAG = "TasksFragment"
+    val TAG = "WallpaperFragment"
     private val viewModel by viewModels<TasksViewModel> { getViewModelFactory() }
 
     private val args: TasksFragmentArgs by navArgs()
@@ -42,7 +47,7 @@ class WallpaperFragment : Fragment(), View.OnTouchListener{
         setHasOptionsMenu(false)
         (activity as AppCompatActivity?)!!.supportActionBar!!.hide()
 
-
+        Log.d(TAG, WallpaperUtils.getFilesList(context).toString() )
         return viewDataBinding.root
     }
 
@@ -50,27 +55,13 @@ class WallpaperFragment : Fragment(), View.OnTouchListener{
 
         viewDataBinding.tvTask.setOnTouchListener(this)
 
-        viewDataBinding.btSetWp.setOnClickListener { setWallpaper() }
+        viewDataBinding.btSetWp.setOnClickListener { setWallpaper(context, viewDataBinding.flWallpaper) }
+        viewDataBinding.btClear.setOnClickListener { clearWallpaper(context) }
+
+
         super.onViewCreated(view, savedInstanceState)
     }
 
-    fun setWallpaper() {
-        val job = GlobalScope.launch {
-
-            val wm = WallpaperManager.getInstance(context)
-            val wallpaper = wm.drawable
-
-            wm.run {
-                clear()
-                setBitmap(BitmapUtils.setViewToBitmapImage(viewDataBinding.flWallpaper))
-            }
-
-        }
-
-        job.invokeOnCompletion {
-//            Toast.makeText(context, "Wallpaper Updated!", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     var dX = 0f
     var dY = 0f
